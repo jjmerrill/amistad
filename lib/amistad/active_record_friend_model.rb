@@ -1,5 +1,3 @@
-require 'squeel'
-
 module Amistad
   module ActiveRecordFriendModel
     extend ActiveSupport::Concern
@@ -15,12 +13,12 @@ module Amistad
       has_many  :pending_invited,
         :through => :friendships,
         :source => :friend,
-        :conditions => { :'friendships.pending' => true, :'friendships.blocker_id' => nil }
+        -> { where(friendships: { pending: true, blocker_id: nil }) }
 
       has_many  :invited,
         :through => :friendships,
         :source => :friend,
-        :conditions => { :'friendships.pending' => false, :'friendships.blocker_id' => nil }
+        -> { where(friendships: { pending: false, blocker_id: nil }) }
 
       #####################################################################################
       # inverse friendships
@@ -32,12 +30,12 @@ module Amistad
       has_many  :pending_invited_by,
         :through => :inverse_friendships,
         :source => :friendable,
-        :conditions => { :'friendships.pending' => true, :'friendships.blocker_id' => nil }
+        -> { where(friendships: { pending: true, blocker_id: nil }) }
 
       has_many  :invited_by,
         :through => :inverse_friendships,
         :source => :friendable,
-        :conditions => { :'friendships.pending' => false, :'friendships.blocker_id' => nil }
+        -> { where(friendships: { pending: false, blocker_id: nil }) }
 
       #####################################################################################
       # blocked friendships
@@ -49,12 +47,12 @@ module Amistad
       has_many  :blockades,
         :through => :blocked_friendships,
         :source => :friend,
-        :conditions => "friend_id <> blocker_id"
+        -> { where("friend_id <> blocker_id") }
 
       has_many  :blockades_by,
         :through => :blocked_friendships,
         :source => :friendable,
-        :conditions => "friendable_id <> blocker_id"
+        -> { where("friendable_id <> blocker_id") }
     end
 
     # suggest a user to become a friend. If the operation succeeds, the method returns true, else false
