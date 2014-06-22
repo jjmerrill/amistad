@@ -11,14 +11,14 @@ module Amistad
         :foreign_key => "friendable_id"
 
       has_many  :pending_invited,
+        -> { where(friendships: { pending: true, blocker_id: nil }) },
         :through => :friendships,
-        :source => :friend,
-        -> { where(friendships: { pending: true, blocker_id: nil }) }
+        :source => :friend
 
       has_many  :invited,
+        -> { where(friendships: { pending: false, blocker_id: nil }) },
         :through => :friendships,
-        :source => :friend,
-        -> { where(friendships: { pending: false, blocker_id: nil }) }
+        :source => :friend
 
       #####################################################################################
       # inverse friendships
@@ -28,14 +28,14 @@ module Amistad
         :foreign_key => "friend_id"
 
       has_many  :pending_invited_by,
+        -> { where(friendships: { pending: true, blocker_id: nil }) },
         :through => :inverse_friendships,
-        :source => :friendable,
-        -> { where(friendships: { pending: true, blocker_id: nil }) }
+        :source => :friendable
 
       has_many  :invited_by,
+        -> { where(friendships: { pending: false, blocker_id: nil }) },
         :through => :inverse_friendships,
-        :source => :friendable,
-        -> { where(friendships: { pending: false, blocker_id: nil }) }
+        :source => :friendable
 
       #####################################################################################
       # blocked friendships
@@ -45,14 +45,14 @@ module Amistad
         :foreign_key => "blocker_id"
 
       has_many  :blockades,
+        -> { where("friend_id <> blocker_id") },
         :through => :blocked_friendships,
-        :source => :friend,
-        -> { where("friend_id <> blocker_id") }
+        :source => :friend
 
       has_many  :blockades_by,
+        -> { where("friendable_id <> blocker_id") },
         :through => :blocked_friendships,
-        :source => :friendable,
-        -> { where("friendable_id <> blocker_id") }
+        :source => :friendable
     end
 
     # suggest a user to become a friend. If the operation succeeds, the method returns true, else false
